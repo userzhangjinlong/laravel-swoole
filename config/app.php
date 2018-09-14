@@ -228,4 +228,6 @@ return [
 
     ],
 
+    'locale'    =>    'zh-CN',
+
 ];
