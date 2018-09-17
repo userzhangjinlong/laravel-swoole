@@ -21,8 +21,12 @@ Route::get('/', 'StaticPagesController@home');
 Route::get('/help', 'StaticPagesController@help')->name('help');
 Route::get('/about', 'StaticPagesController@about')->name('about');
 Route::get('signup', 'UsersController@create')->name('signup');
-Route::get('/users/{user}', 'UsersController@show')->name('users.show');
-Route::post('store', 'UsersController@store')->name('users.store');
+
+//Route::get('/users/{user}', 'UsersController@show')->name('users.show');
+//Route::get('/users/{user}/edit', 'UsersController@edit')->name('users.edit');
+//Route::post('store', 'UsersController@store')->name('users.store');
+//Route::patch('/users/{user}/edit','UsersController@edit')->name('users.update');
+Route::resource('/users','UsersController');
 
 Route::get('login', 'SessionsController@create')->name('login');
 Route::post('login', 'SessionsController@store')->name('login');
