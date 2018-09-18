@@ -32,11 +32,22 @@ class UsersController extends Controller
         return view('users.create');
     }
 
+    /**
+     * @param User $user
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function show(User $user)
     {
-        return view('users.show', compact('user'));
+        $statuses = $user->statuses()
+            ->orderBy('created_at', 'desc')
+            ->paginate(30);
+        return view('users.show', compact('user','statuses'));
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -61,12 +72,23 @@ class UsersController extends Controller
         /*return redirect()->route('users.show', [$user]);*/
     }
 
+    /**
+     * @param User $user
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function edit(User $user)
     {
         $this->authorize('update', $user); //验证用户授权策略
         return view('users.edit', compact('user'));
     }
 
+    /**
+     * @param User $user
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function update(User $user, Request $request)
     {
         $this->authorize('update', $user); //验证用户授权策略
@@ -87,7 +109,11 @@ class UsersController extends Controller
         return redirect()->route('users.show', $user->id);
     }
 
-
+    /**
+     * @param User $user
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function destroy(User $user)
     {
         $this->authorize('destroy', $user);
@@ -96,6 +122,9 @@ class UsersController extends Controller
         return back();
     }
 
+    /**
+     * @param $user
+     */
     protected function sendEmailConfirmationTo($user)
     {
         $view = 'emails.confirm';
@@ -111,6 +140,10 @@ class UsersController extends Controller
         });
     }
 
+    /**
+     * @param $token
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function confirmEmail($token)
     {
         $user = User::where('activation_token', $token)->firstOrFail();
@@ -123,4 +156,5 @@ class UsersController extends Controller
         session()->flash('success', '恭喜你，激活成功！');
         return redirect()->route('users.show', [$user]);
     }
+
 }
