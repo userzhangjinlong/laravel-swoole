@@ -72,9 +72,15 @@ class User extends Authenticatable
         return $this->hasMany(Status::class);
     }
 
+    /**
+     * @return mixed
+     */
     public function feed()
     {
-        return $this->statuses()
+        $user_ids = Auth::user()->followings->pluck('id')->toArray();
+        array_push($user_ids, Auth::user()->id);
+        return Status::whereIn('user_id', $user_ids)
+            ->with('user')
             ->orderBy('created_at', 'desc');
     }
 
@@ -126,4 +132,5 @@ class User extends Authenticatable
     {
         return $this->followings->contains($user_id);
     }
+
 }
